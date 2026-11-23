@@ -162,6 +162,23 @@ namespace ObisLaser.Net.Tests
         }
 
         [TestMethod]
+        public void Discovery_ProbesCoherentUsbPortsByDefault()
+        {
+            laser.Dispose(); // free the port so that discovery can open it
+            var candidates = ObisDiscovery.GetCandidatePortNames();
+            Console.WriteLine($"Coherent USB ports: {string.Join(", ", candidates)}");
+            if (!candidates.Contains(Port!, StringComparer.OrdinalIgnoreCase))
+            {
+                Assert.Inconclusive($"{Port} is not a Coherent USB port (e.g. RS-232 through an adapter).");
+            }
+
+            var devices = ObisDiscovery.FindAll();
+            foreach (var device in devices) Console.WriteLine(device);
+            Assert.IsTrue(devices.All(device => candidates.Contains(device.PortName)));
+            Assert.IsTrue(devices.Any(device => device.PortName == Port && device.Channel == Channel));
+        }
+
+        [TestMethod]
         public void Emission_ReachesRequestedPower()
         {
             if (!TestEmission)

@@ -57,9 +57,14 @@ foreach (var device in ObisDiscovery.FindAll(excludedPortNames: new[] { "COM1" }
 }
 ```
 
-`FindAll` sends `*IDN?` to every serial port, so it may disturb other serial devices (it
-does not change any setting on them). Pass `portNames` to probe only some ports, or
-`excludedPortNames` to skip ports.
+OBIS lasers and controllers connected over USB are recognized by Coherent's USB vendor ID
+(`0x0D4D`) without opening any port: `ObisDiscovery.GetCandidatePortNames()` lists them (on
+Windows only). `FindAll` probes these ports, or every serial port if there are none, for
+example when the laser is connected over RS-232 through a USB adapter.
+
+Probing sends `*IDN?` to each port, so it may disturb other serial devices (it does not change
+any setting on them). Pass `portNames` to choose the ports to probe, for example
+`SerialPort.GetPortNames()` to probe them all, or `excludedPortNames` to skip ports.
 
 ### Anything else
 

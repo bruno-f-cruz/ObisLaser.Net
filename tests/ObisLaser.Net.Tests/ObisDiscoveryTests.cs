@@ -59,5 +59,34 @@ namespace ObisLaser.Net.Tests
             Assert.AreEqual(0, excluded.Written.Count);
             CollectionAssert.AreEqual(new[] { "*IDN?" }, probed.Written);
         }
+
+        [TestMethod]
+        [DataRow("VID_0D4D&PID_003B", 0x0D4D)]
+        [DataRow("vid_0d4d&pid_003b&MI_00", 0x0D4D)]
+        [DataRow("VID_067B&PID_23A3", 0x067B)]
+        [DataRow("ROOT_HUB30", null)]
+        [DataRow("VID_XYZ", null)]
+        public void ParseVendorId_ReadsTheVendorOfAUsbHardwareId(string hardwareId, int? expected)
+        {
+            Assert.AreEqual(expected, UsbSerialPorts.ParseVendorId(hardwareId));
+        }
+
+        [TestMethod]
+        public void DefaultPortNames_PrefersCoherentPorts()
+        {
+            var all = new[] { "COM1", "COM10", "COM12" };
+            CollectionAssert.AreEqual(new[] { "COM12" }, ObisDiscovery.DefaultPortNames(new[] { "COM12" }, all).ToArray());
+            CollectionAssert.AreEqual(all, ObisDiscovery.DefaultPortNames(Array.Empty<string>(), all).ToArray());
+        }
+
+        [TestMethod]
+        public void GetCandidatePortNames_OnlyListsConnectedPorts()
+        {
+            var connected = System.IO.Ports.SerialPort.GetPortNames();
+            foreach (var portName in ObisDiscovery.GetCandidatePortNames())
+            {
+                CollectionAssert.Contains(connected, portName);
+            }
+        }
     }
 }

@@ -17,6 +17,28 @@ namespace ObisLaser.Net
         /// <summary>The maximum number of lasers searched for behind a controller.</summary>
         public const int MaxChannels = 8;
 
+        /// <summary>The USB vendor ID of Coherent, which identifies OBIS lasers and controllers connected over USB.</summary>
+        public const int CoherentVendorId = 0x0D4D;
+
+        /// <summary>
+        /// Lists the serial ports of OBIS lasers and controllers connected over USB, without opening any port.
+        /// </summary>
+        /// <remarks>
+        /// Ports are recognized by Coherent's USB vendor ID. Devices connected over RS-232, for example
+        /// through a USB adapter, are not listed: probe them with <see cref="FindAll(IEnumerable{string}, IEnumerable{string}, TimeSpan?)"/>. Only Windows
+        /// reports the vendor ID of serial ports; on other operating systems the list is empty.
+        /// </remarks>
+        /// <returns>The port names, sorted.</returns>
+        public static IReadOnlyList<string> GetCandidatePortNames()
+        {
+            var connected = new HashSet<string>(SerialPort.GetPortNames(), StringComparer.OrdinalIgnoreCase);
+            return UsbSerialPorts.GetPortNames(CoherentVendorId)
+                .Where(connected.Contains)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(name => name, StringComparer.Ordinal)
+                .ToList();
+        }
+
         /// <summary>
         /// Finds OBIS lasers and controllers by probing serial ports.
         /// </summary>
@@ -24,11 +46,15 @@ namespace ObisLaser.Net
         /// Each port is opened and sent an identification query (<c>*IDN?</c>); ports that reply like a
         /// Coherent device are then queried for their type, model and serial number. Lasers behind a
         /// controller (OBIS Remote, LaserBox) are listed with their channel. Probing writes to every port
-        /// in <paramref name="portNames"/> (all serial ports by default), which may disturb other devices;
-        /// use <paramref name="portNames"/> or <paramref name="excludedPortNames"/> to limit this.
-        /// Ports that are already in use are skipped.
+        /// in <paramref name="portNames"/>, which may disturb other devices; use <paramref name="portNames"/>
+        /// or <paramref name="excludedPortNames"/> to limit this. Ports that are already in use are skipped.
+        /// By default, only the ports of Coherent USB devices are probed (see <see cref="GetCandidatePortNames"/>),
+        /// or every serial port if there are none. To also find devices connected over RS-232 while a
+        /// Coherent USB device is connected, pass <see cref="SerialPort.GetPortNames"/>.
         /// </remarks>
-        /// <param name="portNames">The ports to probe. Defaults to every serial port on the computer.</param>
+        /// <param name="portNames">
+        /// The ports to probe. Defaults to the ports of Coherent USB devices, or to every serial port if there are none.
+        /// </param>
         /// <param name="excludedPortNames">The ports never to probe, e.g. <c>COM1</c> (case-insensitive).</param>
         /// <param name="timeout">The time to wait for each reply.</param>
         /// <returns>The devices found.</returns>
@@ -38,7 +64,7 @@ namespace ObisLaser.Net
             TimeSpan? timeout = null)
         {
             return FindAll(
-                portNames ?? SerialPort.GetPortNames(),
+                portNames ?? DefaultPortNames(GetCandidatePortNames(), SerialPort.GetPortNames()),
                 excludedPortNames ?? Array.Empty<string>(),
                 timeout ?? DefaultProbeTimeout,
                 SerialPortTransport.Open);
@@ -69,6 +95,9 @@ namespace ObisLaser.Net
 
             return devices;
         }
+
+        internal static IReadOnlyList<string> DefaultPortNames(IReadOnlyList<string> candidates, IReadOnlyList<string> allPortNames) =>
+            candidates.Count > 0 ? candidates : allPortNames;
 
         // Sends *IDN? without changing any device setting and checks the reply.
         static bool RepliesLikeObis(string portName, TimeSpan timeout, Func<string, TimeSpan, IObisTransport> openTransport)
