@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <PackageTags>OBIS Coherent Laser SCPI Serial Bonsai</PackageTags>
+    <PackageProjectUrl>https://github.com/bruno-f-cruz/Obis.Net</PackageProjectUrl>
+
+    <Authors>Bruno F. Cruz</Authors>
+    <Copyright>Copyright (c) 2026 Bruno F. Cruz</Copyright>
+  </PropertyGroup>
+</Project>

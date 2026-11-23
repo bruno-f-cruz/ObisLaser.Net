@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net8.0</TargetFrameworks>
+    <Description>Client for Coherent OBIS LX/LS lasers over USB or RS-232 (unofficial, not affiliated with Coherent).</Description>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Obis.Net.Tests" />
+  </ItemGroup>
+
+</Project>
