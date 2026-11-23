@@ -79,7 +79,9 @@ jobs:
 
       # ----------------------------------------------------------------------- Test
       # Hardware tests are excluded here, and also skip themselves whenever CI is set.
+      # The test platform no longer runs .NET Framework tests through Mono, so they run on Windows only.
       - name: Test .NET Framework 4.7.2
+        if: matrix.platform.rid == 'win-x64'
         run: dotnet test --no-restore --no-build --configuration ${{matrix.configuration}} --verbosity normal --framework net472 --filter "TestCategory!=Hardware"
 
       - name: Test .NET 8
