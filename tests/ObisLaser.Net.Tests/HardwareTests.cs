@@ -196,11 +196,12 @@ namespace ObisLaser.Net.Tests
                 laser.SetEmission(true);
                 Assert.IsTrue(laser.GetEmission());
 
-                // Emission can be delayed by warm-up and the 5 s CDRH delay.
+                // Emission can be delayed by warm-up and the 5 s CDRH delay. LaserReady is not waited
+                // for: it is only set within 2% of the setpoint, which low powers may not reach.
                 var stopwatch = Stopwatch.StartNew();
-                while (!laser.GetStatus().HasFlag(StatusFlags.LaserReady))
+                while (!IsEmitting(laser.GetStatus()))
                 {
-                    Assert.IsTrue(stopwatch.Elapsed < TimeSpan.FromSeconds(30), "The laser did not become ready within 30 s.");
+                    Assert.IsTrue(stopwatch.Elapsed < TimeSpan.FromSeconds(30), "The laser did not start emitting within 30 s.");
                     Thread.Sleep(200);
                 }
 
@@ -218,5 +219,8 @@ namespace ObisLaser.Net.Tests
 
             Assert.IsFalse(laser.GetEmission());
         }
+
+        static bool IsEmitting(StatusFlags status) =>
+            status.HasFlag(StatusFlags.LaserEmission) && (status & (StatusFlags.CdrhDelay | StatusFlags.LaserWarmUp)) == 0;
     }
 }
