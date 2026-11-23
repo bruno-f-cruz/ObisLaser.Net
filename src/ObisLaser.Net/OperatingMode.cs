@@ -1,4 +1,4 @@
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Specifies the laser operating mode (manual section 9.5.1).

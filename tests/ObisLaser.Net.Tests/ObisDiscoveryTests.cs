@@ -3,7 +3,7 @@ using System.Linq;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Obis.Net.Tests
+namespace ObisLaser.Net.Tests
 {
     [TestClass]
     public class ObisDiscoveryTests
@@ -33,7 +33,7 @@ namespace Obis.Net.Tests
                 _ => throw new UnauthorizedAccessException(),
             };
 
-            var found = ObisDiscovery.FindAll(new[] { "COM1", "COM2", "COM3" }, TimeSpan.FromMilliseconds(50), Open);
+            var found = ObisDiscovery.FindAll(new[] { "COM1", "COM2", "COM3" }, Array.Empty<string>(), TimeSpan.FromMilliseconds(50), Open);
 
             CollectionAssert.AreEqual(
                 new[]
@@ -44,6 +44,20 @@ namespace Obis.Net.Tests
                 },
                 found.ToList());
             CollectionAssert.AreEqual(new[] { "*IDN?" }, other.Written);
+        }
+
+        [TestMethod]
+        public void FindAll_SkipsExcludedPorts()
+        {
+            var excluded = new FakeObisTransport();
+            var probed = new FakeObisTransport { Silent = true };
+            IObisTransport Open(string port, TimeSpan timeout) => port == "COM1" ? excluded : probed;
+
+            var found = ObisDiscovery.FindAll(new[] { "COM1", "COM2" }, new[] { "com1" }, TimeSpan.FromMilliseconds(50), Open);
+
+            Assert.AreEqual(0, found.Count);
+            Assert.AreEqual(0, excluded.Written.Count);
+            CollectionAssert.AreEqual(new[] { "*IDN?" }, probed.Written);
         }
     }
 }

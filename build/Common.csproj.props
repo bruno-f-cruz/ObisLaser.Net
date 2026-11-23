@@ -1,5 +1,4 @@
 <!--
-  Adapted from the Bonsai Foundation reference template (https://github.com/bonsai-rx/prefect).
   Solution-specific configuration/targets should generally not be placed in this file.
   For solution-wide NuGet properties, update Package.props
   For everything else, update or create Project.csproj.props

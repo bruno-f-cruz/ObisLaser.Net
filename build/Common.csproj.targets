@@ -1,5 +1,4 @@
 <!--
-  Adapted from the Bonsai Foundation reference template (https://github.com/bonsai-rx/prefect).
   Solution-specific configuration/targets should generally not be placed in this file, instead create or update Project.csproj.targets
 -->
 <Project>
@@ -12,8 +11,8 @@
 
   <!--
     Package versioning: local builds are always 42.42.42-dev0 so they can never be mistaken for a release.
-    CI builds use CiBuildVersion, set by the bonsai-rx/configure-build action: the release tag on releases
-    (1.2.0 for v1.2.0), otherwise the next version after the last release with a dev suffix.
+    CI builds use CiBuildVersion, set by the workflow: the release tag on releases (1.2.0 for v1.2.0),
+    otherwise 0.0.0-dev.<run number>.
   -->
   <PropertyGroup>
     <DevVersion Condition="'$(DevVersion)' == ''">0</DevVersion>

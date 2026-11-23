@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Obis.Net.Tests
+namespace ObisLaser.Net.Tests
 {
     /// <summary>
     /// Replies to commands like an OBIS device, from a table of canned query replies.

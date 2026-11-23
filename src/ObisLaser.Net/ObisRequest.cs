@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Represents a single command or query, and how to interpret its reply.

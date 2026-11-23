@@ -1,6 +1,6 @@
 using System;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Specifies the bits of the system status word (manual Table 9-5).

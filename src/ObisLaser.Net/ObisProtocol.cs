@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Provides every command and query of the OBIS host protocol, independent of any I/O.
     /// </summary>
     /// <remarks>
     /// Each method returns an <see cref="ObisRequest{T}"/> pairing the command text with a
-    /// parser for its reply. <see cref="ObisLaser"/> executes these requests, and they can also
+    /// parser for its reply. <see cref="Laser"/> executes these requests, and they can also
     /// be executed directly with <see cref="ObisConnection.Execute{T}"/>. Command syntax follows
     /// chapter 9 ("Host Interface") of the OBIS LX/LS Operator's Manual. Some commands only exist
     /// on some device types (LX, LS or OBIS Remote); other devices reply with an error, raised

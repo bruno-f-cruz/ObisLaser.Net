@@ -1,6 +1,6 @@
 using System;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Specifies the bits of the system fault word (manual Tables 9-4 and 9-6).

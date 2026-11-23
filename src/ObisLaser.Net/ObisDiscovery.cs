@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Provides a method to find OBIS devices connected to serial ports.
@@ -25,24 +25,36 @@ namespace Obis.Net
         /// Coherent device are then queried for their type, model and serial number. Lasers behind a
         /// controller (OBIS Remote, LaserBox) are listed with their channel. Probing writes to every port
         /// in <paramref name="portNames"/> (all serial ports by default), which may disturb other devices;
-        /// pass an explicit list of ports to limit this. Ports that are already in use are skipped.
+        /// use <paramref name="portNames"/> or <paramref name="excludedPortNames"/> to limit this.
+        /// Ports that are already in use are skipped.
         /// </remarks>
         /// <param name="portNames">The ports to probe. Defaults to every serial port on the computer.</param>
+        /// <param name="excludedPortNames">The ports never to probe, e.g. <c>COM1</c> (case-insensitive).</param>
         /// <param name="timeout">The time to wait for each reply.</param>
         /// <returns>The devices found.</returns>
-        public static IReadOnlyList<DiscoveredDevice> FindAll(IEnumerable<string>? portNames = null, TimeSpan? timeout = null)
+        public static IReadOnlyList<DiscoveredDevice> FindAll(
+            IEnumerable<string>? portNames = null,
+            IEnumerable<string>? excludedPortNames = null,
+            TimeSpan? timeout = null)
         {
-            return FindAll(portNames ?? SerialPort.GetPortNames(), timeout ?? DefaultProbeTimeout, SerialPortTransport.Open);
+            return FindAll(
+                portNames ?? SerialPort.GetPortNames(),
+                excludedPortNames ?? Array.Empty<string>(),
+                timeout ?? DefaultProbeTimeout,
+                SerialPortTransport.Open);
         }
 
         internal static IReadOnlyList<DiscoveredDevice> FindAll(
             IEnumerable<string> portNames,
+            IEnumerable<string> excludedPortNames,
             TimeSpan timeout,
             Func<string, TimeSpan, IObisTransport> openTransport)
         {
+            var excluded = new HashSet<string>(excludedPortNames, StringComparer.OrdinalIgnoreCase);
             var devices = new List<DiscoveredDevice>();
             foreach (var portName in portNames.Distinct().OrderBy(name => name, StringComparer.Ordinal))
             {
+                if (excluded.Contains(portName)) continue;
                 if (!RepliesLikeObis(portName, timeout, openTransport)) continue;
                 try
                 {

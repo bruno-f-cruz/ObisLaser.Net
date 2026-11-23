@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Represents one OBIS laser.
@@ -15,29 +15,29 @@ namespace Obis.Net
     /// </remarks>
     /// <example>
     /// <code>
-    /// using var laser = ObisLaser.Open("COM3");
+    /// using var laser = Laser.Open("COM3");
     /// Console.WriteLine(laser.GetInfo());
     /// laser.SetPower(0.010);
     /// laser.SetEmission(true);
     /// </code>
     /// </example>
-    public sealed class ObisLaser : IDisposable
+    public sealed class Laser : IDisposable
     {
         readonly bool ownsConnection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObisLaser"/> class for the laser on
+        /// Initializes a new instance of the <see cref="Laser"/> class for the laser on
         /// <paramref name="channel"/> of an existing connection.
         /// </summary>
         /// <param name="connection">The connection to the laser or to its controller.</param>
         /// <param name="channel">0 for a laser connected directly; 1, 2, ... for the lasers connected
         /// to an OBIS Remote or LaserBox.</param>
-        public ObisLaser(ObisConnection connection, int channel = 0)
+        public Laser(ObisConnection connection, int channel = 0)
             : this(connection, channel, ownsConnection: false)
         {
         }
 
-        ObisLaser(ObisConnection connection, int channel, bool ownsConnection)
+        Laser(ObisConnection connection, int channel, bool ownsConnection)
         {
             if (channel < 0 || channel >= ObisProtocol.BroadcastChannel)
             {
@@ -62,12 +62,12 @@ namespace Obis.Net
         /// <param name="channel">The channel of the laser on the port.</param>
         /// <param name="timeout">The maximum time to wait for a complete reply.</param>
         /// <returns>The laser.</returns>
-        public static ObisLaser Open(string portName, int channel = 0, TimeSpan? timeout = null)
+        public static Laser Open(string portName, int channel = 0, TimeSpan? timeout = null)
         {
             var connection = ObisConnection.Open(portName, timeout);
             try
             {
-                return new ObisLaser(connection, channel, ownsConnection: true);
+                return new Laser(connection, channel, ownsConnection: true);
             }
             catch
             {
@@ -85,7 +85,7 @@ namespace Obis.Net
         }
 
         /// <inheritdoc/>
-        public override string ToString() => $"{nameof(ObisLaser)}(Channel={Channel})";
+        public override string ToString() => $"{nameof(Laser)}(Channel={Channel})";
 
         /// <summary>Executes any request from <see cref="ObisProtocol"/> on this laser.</summary>
         /// <typeparam name="T">The type of the reply value.</typeparam>

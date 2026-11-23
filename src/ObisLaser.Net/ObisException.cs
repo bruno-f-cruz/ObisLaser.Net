@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Represents an error raised while communicating with an OBIS device.

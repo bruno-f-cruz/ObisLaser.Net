@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Obis.Net\Obis.Net.csproj" />
+    <ProjectReference Include="..\..\src\ObisLaser.Net\ObisLaser.Net.csproj" />
   </ItemGroup>
 
   <ItemGroup>

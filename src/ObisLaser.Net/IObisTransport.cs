@@ -2,7 +2,7 @@ using System;
 using System.IO.Ports;
 using System.Text;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Provides the line-based byte transport used by <see cref="ObisConnection"/>.

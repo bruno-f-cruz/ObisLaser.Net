@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Represents a connection to an OBIS laser or controller (OBIS Remote, LaserBox).
@@ -75,7 +75,7 @@ namespace Obis.Net
         /// <param name="channel">0 for a laser connected directly; 1, 2, ... for the lasers connected
         /// to an OBIS Remote or LaserBox.</param>
         /// <returns>The laser.</returns>
-        public ObisLaser GetLaser(int channel = 0) => new(this, channel);
+        public Laser GetLaser(int channel = 0) => new(this, channel);
 
         /// <summary>
         /// Sends a request to the device on <paramref name="channel"/> and returns its parsed reply.

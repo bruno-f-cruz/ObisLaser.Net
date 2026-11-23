@@ -1,4 +1,4 @@
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Specifies the input impedance of the OBIS Remote analog modulation channel.

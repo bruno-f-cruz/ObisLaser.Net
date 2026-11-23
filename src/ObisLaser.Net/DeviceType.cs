@@ -1,4 +1,4 @@
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Specifies the type of an OBIS device.

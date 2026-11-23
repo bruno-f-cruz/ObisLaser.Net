@@ -1,11 +1,11 @@
-# Obis.Net
+# ObisLaser.Net
 
 .NET client for Coherent OBIS LX/LS lasers, over USB or RS-232. It covers the whole host
 command set from the OBIS LX/LS Operator's Manual: device metadata, emission and power
 control, operating modes, temperatures, status and fault words, the error queue and
 persistent settings. Every method has a synchronous and an asynchronous (`...Async`) version.
 
-Targets `net472` (so it loads in [Bonsai](https://bonsai-rx.org)) and `net8.0`.
+Targets `net472` and `net8.0`.
 
 > OBIS and Coherent are trademarks of Coherent Corp. This project is not affiliated
 > with or endorsed by Coherent.
@@ -13,15 +13,15 @@ Targets `net472` (so it loads in [Bonsai](https://bonsai-rx.org)) and `net8.0`.
 ## Install
 
 ```sh
-dotnet add package Obis.Net
+dotnet add package ObisLaser.Net
 ```
 
 ## Quick start
 
 ```csharp
-using Obis.Net;
+using ObisLaser.Net;
 
-using var laser = ObisLaser.Open("COM3");
+using var laser = Laser.Open("COM3");
 
 var info = laser.GetInfo();
 Console.WriteLine($"{info.Model} (S/N {info.SerialNumber}), {info.Wavelength} nm");
@@ -51,14 +51,15 @@ connection.Broadcast("SOUR:AM:STAT ON");   // every laser at once
 ### Finding lasers
 
 ```csharp
-foreach (var device in ObisDiscovery.FindAll())
+foreach (var device in ObisDiscovery.FindAll(excludedPortNames: new[] { "COM1" }))
 {
     Console.WriteLine($"{device.PortName} channel {device.Channel}: {device.Model} ({device.SerialNumber})");
 }
 ```
 
-`FindAll` sends `*IDN?` to every serial port (or only to the ports you pass), so it may
-disturb other serial devices; it does not change any setting on non-OBIS devices.
+`FindAll` sends `*IDN?` to every serial port, so it may disturb other serial devices (it
+does not change any setting on them). Pass `portNames` to probe only some ports, or
+`excludedPortNames` to skip ports.
 
 ### Anything else
 
@@ -85,8 +86,8 @@ IReadOnlyList<string> reply = laser.Query("SYST:INF:FVER?");
 ## Repository layout
 
 ```
-src/Obis.Net/          library (net472; net8.0)
-tests/Obis.Net.Tests/  unit tests against a simulated device (no hardware needed)
+src/ObisLaser.Net/          library (net472; net8.0)
+tests/ObisLaser.Net.Tests/  unit tests against a simulated device (no hardware needed)
 ```
 
 ## Development
@@ -113,27 +114,6 @@ dotnet test -f net8.0 --filter TestCategory=Hardware --logger "console;verbosity
 ```
 
 Block the beam before enabling `OBIS_TEST_EMISSION`.
-
-## Releasing
-
-The build follows the [Bonsai Foundation template](https://github.com/bonsai-rx/prefect): the
-package version comes from the release tag, through the
-[`configure-build`](https://github.com/bonsai-rx/configure-build) action. To publish version
-`0.1.0`, create a GitHub release with the tag `v0.1.0` (pre-releases must use `alpha.N`,
-`beta.N` or `rc.N`, e.g. `v0.2.0-rc.1`, and be marked as pre-release). The `Obis.Net` workflow
-then builds and tests the packages with that version, attaches them to the release and
-publishes them to NuGet.org. Every push also publishes a development version to GitHub Packages.
-
-One-time setup:
-
-1. Create a GitHub environment named `public-release` (Settings > Environments).
-2. On NuGet.org, add a [trusted publishing policy](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing)
-   for this repository and the workflow `Obis.Net.yml`.
-3. In the `public-release` environment, add the secret `NUGET_USER` (your NuGet.org user name)
-   and the variable `NUGET_API_URL` set to `https://api.nuget.org/v3/index.json`.
-
-Local builds are always versioned `42.42.42-dev0`, so they can never be mistaken for a release.
-Build output goes to the `artifacts/` folder.
 
 ## License
 

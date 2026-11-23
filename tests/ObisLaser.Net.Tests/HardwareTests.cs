@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Obis.Net.Tests
+namespace ObisLaser.Net.Tests
 {
     /// <summary>
     /// Tests against a real OBIS laser. Skipped unless <c>OBIS_PORT</c> is set, and always skipped
@@ -31,7 +31,7 @@ namespace Obis.Net.Tests
         static readonly int Channel = int.TryParse(Environment.GetEnvironmentVariable("OBIS_CHANNEL"), out var channel) ? channel : 0;
         static readonly bool TestEmission = Environment.GetEnvironmentVariable("OBIS_TEST_EMISSION") == "1";
 
-        ObisLaser laser = null!;
+        Laser laser = null!;
 
         [TestInitialize]
         public void Initialize()
@@ -46,7 +46,7 @@ namespace Obis.Net.Tests
                 Assert.Inconclusive("Set OBIS_PORT to test with a real laser.");
             }
 
-            laser = ObisLaser.Open(Port!, Channel);
+            laser = Laser.Open(Port!, Channel);
         }
 
         [TestCleanup]
@@ -156,7 +156,7 @@ namespace Obis.Net.Tests
         public void Discovery_FindsTheLaser()
         {
             laser.Dispose(); // free the port so that discovery can open it
-            var devices = ObisDiscovery.FindAll(new[] { Port! });
+            var devices = ObisDiscovery.FindAll(portNames: new[] { Port! });
             foreach (var device in devices) Console.WriteLine(device);
             Assert.IsTrue(devices.Any(device => device.Channel == Channel));
         }

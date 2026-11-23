@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
 
-namespace Obis.Net.Tests
+namespace ObisLaser.Net.Tests
 {
     [TestClass]
     public class ObisProtocolTests

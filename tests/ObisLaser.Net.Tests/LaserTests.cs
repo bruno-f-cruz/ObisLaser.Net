@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Obis.Net.Tests
+namespace ObisLaser.Net.Tests
 {
     [TestClass]
-    public class ObisLaserTests
+    public class LaserTests
     {
         static readonly TimeSpan Timeout = TimeSpan.FromMilliseconds(100);
 
@@ -37,7 +37,7 @@ namespace Obis.Net.Tests
             ["SYST:FAUL?"] = "00000000",
         });
 
-        static ObisLaser CreateLaser(FakeObisTransport device, int channel = 0)
+        static Laser CreateLaser(FakeObisTransport device, int channel = 0)
         {
             return new ObisConnection(device, Timeout).GetLaser(channel);
         }

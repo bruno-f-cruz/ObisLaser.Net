@@ -1,4 +1,4 @@
-namespace Obis.Net
+namespace ObisLaser.Net
 {
     /// <summary>
     /// Represents static information describing a laser.

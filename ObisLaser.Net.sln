@@ -5,11 +5,11 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obis.Net", "src\Obis.Net\Obis.Net.csproj", "{63EE94AC-71BC-4C59-832D-C27B5758C0D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObisLaser.Net", "src\ObisLaser.Net\ObisLaser.Net.csproj", "{63EE94AC-71BC-4C59-832D-C27B5758C0D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obis.Net.Tests", "tests\Obis.Net.Tests\Obis.Net.Tests.csproj", "{04C439F2-8AF2-461F-869A-74286D96915F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObisLaser.Net.Tests", "tests\ObisLaser.Net.Tests\ObisLaser.Net.Tests.csproj", "{04C439F2-8AF2-461F-869A-74286D96915F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

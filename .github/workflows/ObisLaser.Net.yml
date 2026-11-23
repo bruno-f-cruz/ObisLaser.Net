@@ -1,15 +1,12 @@
 # =======================================================================================================================================================================
-# Obis.Net CI/CD
+# ObisLaser.Net CI/CD
 # =======================================================================================================================================================================
 # Index:
 # * Build, test, and package .NET
 # * Publish packages to GitHub
 # * Publish packages to NuGet.org
 # =======================================================================================================================================================================
-# Adapted from the generic Bonsai package workflow, see https://github.com/bonsai-rx/prefect for more information.
-# The documentation and workflow image jobs are omitted since this repository has no documentation website.
-# =======================================================================================================================================================================
-name: Obis.Net
+name: ObisLaser.Net
 on:
   push:
     # This prevents tag pushes from triggering this workflow
@@ -62,8 +59,17 @@ jobs:
       # ----------------------------------------------------------------------- Configure build
       # Sets CiBuildVersion: the release tag on releases (v0.1.0 -> 0.1.0), otherwise a dev version.
       - name: Configure build
-        id: configure-build
-        uses: bonsai-rx/configure-build@v2
+        shell: bash
+        env:
+          TAG: ${{github.event.release.tag_name}}
+        run: |
+          if [ "${{github.event_name}}" = "release" ]; then
+            version="${TAG#v}"
+          else
+            version="0.0.0-dev.${{github.run_number}}"
+          fi
+          echo "Building version $version"
+          echo "CiBuildVersion=$version" >> "$GITHUB_ENV"
 
       # ----------------------------------------------------------------------- Build
       - name: Restore
