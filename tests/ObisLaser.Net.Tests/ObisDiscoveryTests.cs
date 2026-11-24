@@ -47,6 +47,65 @@ namespace ObisLaser.Net.Tests
         }
 
         [TestMethod]
+        public void FindAll_FindsLasersBehindMultiLaserBoxAcrossEmptySlots()
+        {
+            // Replies of an OBIS 5-Laser Box (TYP? MULTI): slot 2 is empty and replies ERR-241, slot 3 has a laser.
+            var box = new FakeObisTransport(new()
+            {
+                ["*IDN?"] = "Coherent, Inc. - OBIS 5-LASER BOX - v1.0.5 - 20130109",
+                ["SYST:INF:TYP?"] = "MULTI",
+                ["SYST:INF:MOD?"] = "OBIS 5-LASER BOX",
+                ["SYST:INF:SNUM?"] = "C230823001",
+                ["SYST1:INF:TYP?"] = "OPSL",
+                ["SYST1:INF:MOD?"] = "OBIS LS 561-150",
+                ["SYST1:INF:SNUM?"] = "466789",
+                ["SYST3:INF:TYP?"] = "DDL",
+                ["SYST3:INF:MOD?"] = "514-50FP",
+                ["SYST3:INF:SNUM?"] = "FS230321024",
+            });
+            foreach (var query in new[] { "TYP", "MOD", "SNUM" })
+            {
+                for (int channel = 2; channel <= ObisDiscovery.MaxChannels; channel += channel == 2 ? 2 : 1)
+                {
+                    box.Errors[string.Format("SYST{0}:INF:{1}?", channel, query)] = -241;
+                }
+            }
+
+            var found = ObisDiscovery.FindAll(new[] { "COM6" }, Array.Empty<string>(), TimeSpan.FromMilliseconds(50), (port, timeout) => box);
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    new DiscoveredDevice("COM6", 0, DeviceType.Multi, "OBIS 5-LASER BOX", "C230823001"),
+                    new DiscoveredDevice("COM6", 1, DeviceType.Opsl, "OBIS LS 561-150", "466789"),
+                    new DiscoveredDevice("COM6", 3, DeviceType.Ddl, "514-50FP", "FS230321024"),
+                },
+                found.ToList());
+        }
+
+        [TestMethod]
+        public void FindAll_StopsAtASlotThatDoesNotReply()
+        {
+            // A controller that stops replying at slot 2: the search ends there instead of waiting on every slot.
+            var controller = new FakeObisTransport(new()
+            {
+                ["*IDN?"] = "Coherent, Inc-OBIS Remote-V1.0-20200101",
+                ["SYST:INF:TYP?"] = "MINI",
+                ["SYST:INF:MOD?"] = "OBIS Remote",
+                ["SYST:INF:SNUM?"] = "R1",
+                ["SYST1:INF:TYP?"] = "DDL",
+                ["SYST1:INF:MOD?"] = "OBIS 405nm LX 100mW",
+                ["SYST1:INF:SNUM?"] = "L1",
+            })
+            { SilentFrom = "SYST2:INF:TYP?" };
+
+            var found = ObisDiscovery.FindAll(new[] { "COM1" }, Array.Empty<string>(), TimeSpan.FromMilliseconds(50), (port, timeout) => controller);
+
+            Assert.AreEqual(2, found.Count);
+            Assert.IsFalse(controller.Written.Any(command => command.StartsWith("SYST3", StringComparison.Ordinal)));
+        }
+
+        [TestMethod]
         public void FindAll_SkipsExcludedPorts()
         {
             var excluded = new FakeObisTransport();

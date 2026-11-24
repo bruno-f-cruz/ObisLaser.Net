@@ -45,7 +45,7 @@ namespace ObisLaser.Net
         /// <remarks>
         /// Each port is opened and sent an identification query (<c>*IDN?</c>); ports that reply like a
         /// Coherent device are then queried for their type, model and serial number. Lasers behind a
-        /// controller (OBIS Remote, LaserBox) are listed with their channel. Probing writes to every port
+        /// controller (OBIS Remote, LaserBox, 5-Laser Box) are listed with their channel. Probing writes to every port
         /// in <paramref name="portNames"/>, which may disturb other devices; use <paramref name="portNames"/>
         /// or <paramref name="excludedPortNames"/> to limit this. Ports that are already in use are skipped.
         /// By default, only the ports of Coherent USB devices are probed (see <see cref="GetCandidatePortNames"/>),
@@ -120,14 +120,19 @@ namespace ObisLaser.Net
         {
             var root = DescribeChannel(connection, portName, 0);
             var devices = new List<DiscoveredDevice> { root };
-            if (root.DeviceType is DeviceType.Mini or DeviceType.Master)
+            if (root.DeviceType is DeviceType.Mini or DeviceType.Master or DeviceType.Multi)
             {
-                // Lasers behind a controller are numbered from 1; stop at the first missing one.
+                // Lasers behind a controller are numbered from 1. An empty slot replies with an error (an OBIS 5-Laser
+                // Box replies ERR-241), and a laser may follow it, so every slot is queried; only a slot that does not
+                // reply at all ends the search.
                 for (int channel = 1; channel <= MaxChannels; channel++)
                 {
                     try
                     {
                         devices.Add(DescribeChannel(connection, portName, channel));
+                    }
+                    catch (ObisDeviceException)
+                    {
                     }
                     catch (ObisException)
                     {
