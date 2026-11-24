@@ -99,6 +99,17 @@ namespace ObisLaser.Net.Tests
         }
 
         [TestMethod]
+        [DataRow("DDL", DeviceType.Ddl)]
+        [DataRow("OPSL", DeviceType.Opsl)]
+        [DataRow("MINI", DeviceType.Mini)]
+        [DataRow("MASTER", DeviceType.Master)]
+        [DataRow("MULTI", DeviceType.Multi)]
+        public void DeviceType_IsParsed(string reply, DeviceType expected)
+        {
+            Assert.AreEqual(expected, ObisProtocol.GetDeviceType().Parse(new[] { reply }));
+        }
+
+        [TestMethod]
         public void UnknownDeviceType_IsOther()
         {
             Assert.AreEqual(DeviceType.Other, ObisProtocol.GetDeviceType().Parse(new[] { "GALAXY" }));

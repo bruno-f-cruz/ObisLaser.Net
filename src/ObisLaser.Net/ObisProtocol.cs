@@ -409,6 +409,7 @@ namespace ObisLaser.Net
                 "OPSL" => DeviceType.Opsl,
                 "MINI" => DeviceType.Mini,
                 "MASTER" => DeviceType.Master,
+                "MULTI" => DeviceType.Multi,
                 _ => DeviceType.Other,
             };
         }

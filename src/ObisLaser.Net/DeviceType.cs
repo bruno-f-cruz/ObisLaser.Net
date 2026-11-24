@@ -19,5 +19,8 @@ namespace ObisLaser.Net
 
         /// <summary>Master controller, such as an OBIS LaserBox (MASTER).</summary>
         Master,
+
+        /// <summary>Multi-laser controller, such as an OBIS 5-Laser Box (MULTI).</summary>
+        Multi,
     }
 }

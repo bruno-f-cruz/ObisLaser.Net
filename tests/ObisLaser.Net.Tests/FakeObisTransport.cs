@@ -32,6 +32,9 @@ namespace ObisLaser.Net.Tests
 
         public bool Silent { get; set; }
 
+        /// <summary>A command from which the device stops replying, e.g. to simulate a controller hanging.</summary>
+        public string? SilentFrom { get; set; }
+
         public bool KeepInputOnDiscard { get; set; }
 
         public bool Disposed { get; private set; }
@@ -45,6 +48,7 @@ namespace ObisLaser.Net.Tests
 
             var command = text.Substring(0, text.Length - 1);
             Written.Add(command);
+            if (command == SilentFrom) Silent = true;
             if (!Silent) Respond(command);
         }
 
